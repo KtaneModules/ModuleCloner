@@ -1,0 +1,17 @@
+name: Clone update
+on:
+    workflow_dispatch:
+    schedule:
+        - cron: '15 8 * * *'
+jobs:
+  Clone_update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Clone update
+        run: bash update.sh
+        env:
+            TOKEN: ${{secrets.BOT_TOKEN}}
+            USERNAME: ${{secrets.BOT_NAME}}
+            EMAIL: ${{secrets.BOT_EMAIL}}
+            REPOSITORY: ${{github.repository}}
