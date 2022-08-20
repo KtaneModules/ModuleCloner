@@ -1,3 +1,4 @@
+from flask import Flask
 from dotenv import load_dotenv
 from threading import Thread
 import subprocess
@@ -15,6 +16,10 @@ USERNAME = os.environ["USERNAME"]
 EMAIL = os.environ["EMAIL"]
 ORGANIZATION_NAME = os.environ["ORGANIZATION_NAME"]
 WORKFLOW_BRANCH = os.environ["WORKFLOW_BRANCH"]
+HOST = os.environ["HOST"]
+PORT = os.environ["PORT"]
+
+app = Flask("ModuleCloner")
 
 def modify_text(text, **kwargs):
 	kwargs |= {
@@ -171,8 +176,17 @@ def fork_all():
 	running = False
 	print("Forking complete")
 
+@app.route("/")
+def home():
+	return ""
+
+@app.route("/pull", methods=['GET', 'POST'])
 def on_webhook():
 	global auto_restart
+	print("Pull request")
 	auto_restart = True
 	if not running:
 		Thread(target=fork_all).start()
+	return "Pull request registered"
+
+app.run(host=HOST, port=PORT)

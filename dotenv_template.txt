@@ -3,3 +3,5 @@ USERNAME="GitHub username"
 EMAIL="GitHub e-mail address"
 ORGANIZATION_NAME="GitHub organization name"
 WORKFLOW_BRANCH="Workflow branch name"
+HOST="IP"
+PORT=#Port
