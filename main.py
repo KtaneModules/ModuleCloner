@@ -138,6 +138,7 @@ def fork_all():
 	running = True
 	while auto_restart:
 		auto_restart = False
+		RunWait(10)
 		r = requests.get("https://ktane.timwi.de/json/raw")
 		if not r:
 			print("Failed to fetch mods: " + str(r.content))
