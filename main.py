@@ -45,7 +45,7 @@ def read_list(path, name):
 
 read_text("workflow_files/cloneupdate.yml", "cloneupdate")
 read_text("workflow_files/update.sh", "updater")
-read_text("workflow_files/README.md", "readme")
+read_text("workflow_files/clone_README.md", "readme")
 
 API_HEADERS = {
 	"Accept": "application/vnd.github+json",
