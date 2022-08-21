@@ -24,7 +24,7 @@ UPSTREAM=()
 
 for branch in $(git branch -r | tr "\n" "\n"); do
   if [[ "$branch" != "->" && "$branch" != "origin/HEAD" && "$branch" != "upstream/{workflow_branch}" ]]; then
-    ARR=($(echo "$branch" | tr "/" " "))
+    ARR=($( cut -d '/' -f 1 <<< "$branch" ) $( cut -d '/' -f 2- <<< "$branch" ))
     if [[ "${ARR[0]}" == "origin" ]]; then
         ORIGIN+=("${ARR[1]}")
     else
