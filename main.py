@@ -111,7 +111,7 @@ def fork(owner, repo, description = None):
 	write_text(fork_name + "/update.sh", updater, **KWARGS)
 	write_text(fork_name + "/README.md", readme, **KWARGS)
 	os.system(f'cd {fork_name} && git config user.name {USERNAME} && git config user.email {EMAIL} && git add update.sh && git add README.md && git commit -m "Add workflow branch files" && git push https://{USERNAME}:{API_TOKEN}@github.com/KtaneModules/{fork["name"]}.git {WORKFLOW_BRANCH}')
-	for branch in [l.split("/")[1] for l in [b.strip() for b in subprocess.check_output(f"cd {fork_name} && git branch -r", shell=True).decode("utf-8").split("\n") if b]][1:]:
+	for branch in ["/".join(l.split("/")[1:]) for l in [b.strip() for b in subprocess.check_output(f"cd {fork_name} && git branch -r", shell=True).decode("utf-8").split("\n") if b]][1:]:
 		if branch==WORKFLOW_BRANCH or branch.startswith("HEAD"):
 			continue
 		print("Pushing " + branch)
