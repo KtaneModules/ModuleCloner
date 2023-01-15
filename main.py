@@ -54,7 +54,8 @@ read_text("workflow_files/clone_README.md", "readme")
 
 API_HEADERS = {
 	"Accept": "application/vnd.github+json",
-	"Authorization": f"token {API_TOKEN}"
+	"Authorization": f"token {API_TOKEN}",
+	"X-GitHub-Api-Version": "2022-11-28"
 }
 
 UPDATE_DATA = json.dumps({
