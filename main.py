@@ -137,46 +137,56 @@ def fork_all():
 	global running, auto_restart
 	print("Forking repos")
 	running = True
-	while auto_restart:
-		auto_restart = False
-		RunWait(10)
-		r = requests.get("https://ktane.timwi.de/json/raw")
-		if not r:
-			print("Failed to fetch mods: " + str(r.content))
-			return
-		mods = json.loads(r.content)["KtaneModules"]
-		for mod in mods:
-			if "SourceUrl" in mod:
-				for match in re.finditer(r"^https?:\/\/github\.com\/([^\/]+)\/([^\/\?]+)([\/\?].*?)?$", mod["SourceUrl"], re.I):
-					owner = match.group(1)
-					repo = match.group(2)
-					if repo.lower().endswith(".git"):
-						repo = repo[:-4]
-					repo_name = f"{owner}/{repo}"
-					repo_name_lower = repo_name.lower()
-					print("Checking " + repo_name)
-					if not repo_name_lower in forked_repos:
-						RunWait()
-						print("Checking if repo exists")
-						r = requests.get(f"https://api.github.com/repos/{repo_name}", headers=API_HEADERS)
-						if not r:
-							print(f"Repo {repo_name} doesn't seem to exist: " + str(r.content))
-							break
-						RunWait()
-						create_fork = True
-						if create_fork and fork(owner, repo, json.loads(r.content)["description"]):
-							forked_repos.append(repo_name_lower)
-							with open("forks.txt", "a") as f:
-								f.write(repo_name_lower+"\n")
-						elif create_fork and repo_name_lower not in error_repos:
-							error_repos.append(repo_name_lower)
-							with open("errors.txt", "a") as f:
-								f.write(repo_name_lower+"\n")
+	try:
+		while auto_restart:
+			auto_restart = False
+			RunWait(10)
+			r = requests.get("https://ktane.timwi.de/json/raw")
+			if not r:
+				print("Failed to fetch mods: " + str(r.content))
+				return
+			print("Modules fetched")
+			mods = json.loads(r.content)["KtaneModules"]
+			for mod in mods:
+				if "SourceUrl" in mod:
+					print(mod["SourceUrl"])
+					if "License" in mod and mod["License"] == "OpenSourceClone":
+						continue
+					for match in re.finditer(r"^https?:\/\/github\.com\/([^\/]+)\/([^\/\?]+)([\/\?].*?)?$", mod["SourceUrl"], re.I):
+						owner = match.group(1)
+						repo = match.group(2)
+						if repo.lower().endswith(".git"):
+							repo = repo[:-4]
+						repo_name = f"{owner}/{repo}"
+						repo_name_lower = repo_name.lower()
+						print("Checking " + repo_name)
+						if not repo_name_lower in forked_repos:
+							RunWait()
+							print("Checking if repo exists")
+							r = requests.get(f"https://api.github.com/repos/{repo_name}", headers=API_HEADERS)
+							if not r:
+								print(f"Repo {repo_name} doesn't seem to exist: " + str(r.content))
+								break
+							RunWait()
+							create_fork = True
+							if create_fork and fork(owner, repo, json.loads(r.content)["description"]):
+								forked_repos.append(repo_name_lower)
+								with open("forks.txt", "a") as f:
+									f.write(repo_name_lower+"\n")
+							elif create_fork and repo_name_lower not in error_repos:
+								error_repos.append(repo_name_lower)
+								with open("errors.txt", "a") as f:
+									f.write(repo_name_lower+"\n")
+						else:
+							print(f"Skiping {repo_name}")
+						break
 					else:
-						print(f"Skiping {repo_name}")
-					break
-	running = False
-	print("Forking complete")
+						print("No good")
+	except Exception as e:
+		print(e)
+	finally:
+		running = False
+		print("Forking complete")
 
 @app.route("/")
 def home():
